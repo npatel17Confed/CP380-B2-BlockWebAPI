@@ -16,9 +16,12 @@ namespace CP380_B2_BlockWebAPI.Controllers
         private readonly List<PendingPayloads> _payloads;
         private PendingPayloadsList _payloadList;
 
-        public PendingPayloadsController(PendingPayloadsList payloads)
+        public PendingPayloadsController()
         {
-            _payloads = payloads.PendingPayloads;
+            var payloads = new List<PendingPayloads>();
+            var payloadsList = new PendingPayloadsList();
+            _payloads = payloads;
+            _payloadList = payloadsList;
         }
 
         [HttpGet]
@@ -26,7 +29,9 @@ namespace CP380_B2_BlockWebAPI.Controllers
             _payloads.ToList();
 
         [HttpPost]
-        public ActionResult<PendingPayloads> Post(PendingPayloads payload) =>
-            _payloadList.Add(payload);
+        public ActionResult<PendingPayloads> Post(PendingPayloads payload)
+        {
+            return _payloadList.Add(payload);
+        }
     }
 }

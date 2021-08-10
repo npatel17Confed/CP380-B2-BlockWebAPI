@@ -13,8 +13,10 @@ namespace CP380_B2_BlockWebAPI.Models
         public int amount { get; set; }
         public string? item { get; set; }
 
-        public PendingPayloads(B1.Payload payload)
+        public PendingPayloads()
         {
+            var payload = new B1.Payload("user 1", B1.TransactionTypes.BUY, 10, "Stock");
+
             user = payload.User;
             transactionType = payload.TransactionType;
             amount = payload.Amount;
@@ -24,7 +26,7 @@ namespace CP380_B2_BlockWebAPI.Models
 
     public class PendingPayloadsList
     {
-        public List<PendingPayloads> PendingPayloads { get; set; }
+        public List<PendingPayloads> PendingPayloads = new List<PendingPayloads>();
 
         public PendingPayloads Add(PendingPayloads payload)
         {

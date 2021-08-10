@@ -29,6 +29,8 @@ namespace CP380_B2_BlockWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<BlockList>();
+            services.AddSingleton<BlockSummaryList>();
+            services.AddSingleton<PendingPayloadsList>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
