@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CP380_B2_BlockWebAPI.Models;
-using B1 = CP380_B1_BlockList.Models;
+using CP380_B1_BlockList.Models;
 
 namespace CP380_B2_BlockWebAPI.Controllers
 {
@@ -14,25 +14,48 @@ namespace CP380_B2_BlockWebAPI.Controllers
     [Produces("application/json")]
     public class BlocksController : ControllerBase
     {
-        private readonly BlockSummaryList _blocksSummaries;
         private readonly BlockList _blocks;
 
-        public BlocksController(BlockSummaryList blocksSummaries, BlockList blocks)
+        public BlocksController(BlockList blocks)
         {
-            _blocksSummaries = blocksSummaries;
             _blocks = blocks;
         }
 
         [HttpGet]
-        public ActionResult<List<BlockSummary>> Get() =>
-            _blocksSummaries.Blocks.ToList();
+        public ActionResult<List<BlockSummary>> Get()
+        {
+            List<Block> blocks = _blocks.Chain.ToList();
+            List<BlockSummary> blockSummaries = new List<BlockSummary>();
+
+            foreach (var bl in blocks)
+            {
+                _blocks.AddBlock(bl);
+                blockSummaries.Add(new BlockSummary()
+                {
+                    hash = bl.Hash,
+                    previousHash = bl.PreviousHash,
+                    timestamp = bl.TimeStamp
+                });
+            }
+
+            return blockSummaries;
+        }
 
         [HttpGet("{hash}")]
-        public ActionResult<BlockSummary> GetBlock(string hash) =>
-            _blocksSummaries.Blocks.Where(b => b.hash == hash).First();
+        public ActionResult<Block> GetBlock(string hash)
+        {
+            var output = _blocks.Chain.Where(b => b.Hash == hash).First();
+            if (output.Hash.Length > 0)
+            {
+                return output;
+            } else
+            {
+                return NotFound();
+            }
+        }
 
         [HttpGet("{hash}/Payloads")]
-        public ActionResult<List<B1.Payload>> GetPayload(string hash) =>
-            _blocks.Blocks.Where(b => b.hash == hash).Select(row => row.data).First().ToList();
+        public ActionResult<List<Payload>> GetPayload(string hash) =>
+            _blocks.Chain.Where(b => b.Hash == hash).Select(row => row.Data).First().ToList();
     }
 }
